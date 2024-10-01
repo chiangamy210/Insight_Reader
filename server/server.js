@@ -22,6 +22,7 @@ const upload = multer({ storage: storage });
 const port = 5001;
 
 let filePath;
+let filePaths;
 
 app.get("/chat", async (req, res) => {
   try {
@@ -32,21 +33,31 @@ app.get("/chat", async (req, res) => {
   }
 });
 
-app.post("/upload", upload.single("file"), (req, res) => {
-  try {
-    filePath = req.file.path;
-    res.send(filePath + "upload sueccesfeully");
-  } catch (e) {
-    res.send(`uppload error ${e}`);
-  }
-});
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
 // post up to 4 files
-// app.post("bulk", upload.array("files", 4), (req, res) => {
-//   filePath = req.file.path;
-//   res.send(filePath + "upload sueccesfeully");
+app.post("/upload", upload.array("files", 4), (req, res) => {
+  try {
+    if (!req.files) {
+      return res.status(400).send("No files uploaded.");
+    }
+
+    const filePaths = req.files.map((file) => file.path);
+    res.send(filePaths.join(", ") + " upload sueccesfeully");
+  } catch (e) {
+    res.send(`uppload error ${e}`);
+  }
+});
+
+//for single upload
+// app.post("/upload", upload.single("file"), (req, res) => {
+//   rea.send(req);
+//   try {
+//     filePath = req.file.path;
+//     res.send(filePath + "upload sueccesfeully");
+//   } catch (e) {
+//     res.send(`uppload error ${e}`);
+//   }
 // });
