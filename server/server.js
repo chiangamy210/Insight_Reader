@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import cors from "cors";
 import dotenv from "dotenv";
+import chat from "./chat.js";
 
 dotenv.config();
 
@@ -21,20 +22,23 @@ const upload = multer({ storage: storage });
 
 const port = 5001;
 
-let filePath;
-let filePaths;
+// app.get("/chat", async (req, res) => {
+//   try {
+//     const resp = await chat(filePath, req.query.question);
+//     res.send(resp.text);
+//   } catch (e) {
+//     res.send(`chat is wrong ${e}`);
+//   }
+// });
 
-app.get("/chat", async (req, res) => {
+//ask gemini a tory
+app.get("/story", async (req, res) => {
   try {
-    const resp = await chat(filePath, req.query.question);
-    res.send(resp.text);
-  } catch (e) {
-    res.send(`chat is wrong ${e}`);
+    const result = await chat();
+    res.send(result);
+  } catch (error) {
+    console.error("Error generating content:", error);
   }
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
 });
 
 // post up to 4 files
@@ -49,6 +53,10 @@ app.post("/upload", upload.array("files", 4), (req, res) => {
   } catch (e) {
     res.send(`uppload error ${e}`);
   }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 //for single upload

@@ -4,23 +4,21 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-async function chat() {
+export async function chat(
+  prompt = "Write a story about a magic flower in Chinese."
+) {
   const geminiAiApiKey = process.env.GEMINI_API_KEY;
 
   const genAI = new GoogleGenerativeAI(geminiAiApiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const prompt = "Write a story about a magic backpack.";
-
   try {
     const result = await model.generateContent(prompt);
-    console.log(result.response.text());
+    return result.response.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error("Error generating content:", error);
   }
 }
-
-//TODO push to github
 
 //TODO connect 5001 sever.js
 // const chat = async (filePath = "", query) => {
