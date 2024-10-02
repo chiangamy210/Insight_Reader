@@ -31,17 +31,6 @@ export function HomePage() {
         <div>
           <ChatContent />
         </div>
-        <div
-          style={{
-            display: "flex",
-            position: "fixed",
-            bottom: 0,
-            justifyContent: "center",
-            marginBottom: 25,
-          }}
-        >
-          <InputBox />
-        </div>
       </box>
     </div>
   );

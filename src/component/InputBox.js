@@ -1,15 +1,9 @@
-import {
-  Divider,
-  IconButton,
-  InputBase,
-  Paper,
-  TextField,
-} from "@mui/material";
+import { IconButton, InputBase, Paper } from "@mui/material";
 import SendRoundedIcon from "@mui/icons-material/Send";
 
 import { pink } from "@mui/material/colors";
 
-export function InputBox() {
+export function InputBox({ handleChange, handleSend }) {
   return (
     <Paper
       component="form"
@@ -23,9 +17,14 @@ export function InputBox() {
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder="Upload your PDF files and you can ask any question about the files"
-        inputProps={{ "aria-label": "search google maps" }}
+        onChange={handleChange}
       />
-      <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+      <IconButton
+        type="button"
+        sx={{ p: "10px" }}
+        aria-label="search"
+        onClick={handleSend}
+      >
         <SendRoundedIcon color="success" />
       </IconButton>
     </Paper>
