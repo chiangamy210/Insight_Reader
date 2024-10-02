@@ -4,16 +4,14 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export async function chat(
-  prompt = "Write a story about a magic flower in Chinese."
-) {
+export async function chat(req) {
   const geminiAiApiKey = process.env.GEMINI_API_KEY;
 
   const genAI = new GoogleGenerativeAI(geminiAiApiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   try {
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent(req);
     return result.response.candidates[0].content.parts[0].text;
   } catch (error) {
     console.error("Error generating content:", error);

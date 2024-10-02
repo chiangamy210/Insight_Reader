@@ -31,10 +31,10 @@ const port = 5001;
 //   }
 // });
 
-//ask gemini a tory
-app.get("/story", async (req, res) => {
+//ask gemini a tchat with user
+app.get("/chat", async (req, res) => {
   try {
-    const result = await chat();
+    const result = await chat(req.query.question);
     res.send(result);
   } catch (error) {
     console.error("Error generating content:", error);
