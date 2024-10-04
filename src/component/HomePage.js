@@ -3,7 +3,8 @@ import InputFileUpload from "./Upload";
 import { DisplayFiles } from "./DisplayFiles";
 
 import { InputBox } from "./InputBox";
-import { ChatContent } from "./ChatContent";
+import { ChatBox } from "./ChatBox";
+import { Box } from "@mui/material";
 
 export function HomePage() {
   const [files, setFiles] = useState([]); // Use state to store files
@@ -16,7 +17,7 @@ export function HomePage() {
   }
   return (
     <div>
-      <box
+      <Box
         style={{
           display: "flex",
           flexDirection: "column",
@@ -29,9 +30,9 @@ export function HomePage() {
         <DisplayFiles fileList={files} />
         <div style={{ marginTop: 30 }}></div>
         <div>
-          <ChatContent />
+          <ChatBox />
         </div>
-      </box>
+      </Box>
     </div>
   );
 }

@@ -1,32 +1,47 @@
-import { IconButton, InputBase, Paper } from "@mui/material";
-import SendRoundedIcon from "@mui/icons-material/Send";
+import { Box, InputBase, Paper, styled, TextField } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SendIcon from "@mui/icons-material/Send";
 
-import { pink } from "@mui/material/colors";
+export function InputBox({ handleChange, handleSend, loading, inputValue }) {
+  const StyledTextField = styled(TextField)({
+    flexGrow: 1,
+    marginRight: "8px",
+  });
 
-export function InputBox({ handleChange, handleSend }) {
   return (
-    <Paper
+    <Box
       component="form"
       sx={{
         p: "2px 4px",
         display: "flex",
-        alignItems: "center",
-        width: 600,
+        justifyContent: "center",
+        width: 690,
       }}
     >
-      <InputBase
+      <TextField
         sx={{ ml: 1, flex: 1 }}
         placeholder="Upload your PDF files and you can ask any question about the files"
+        value={inputValue}
         onChange={handleChange}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSend();
+          }
+        }}
       />
-      <IconButton
-        type="button"
-        sx={{ p: "10px" }}
-        aria-label="search"
+      <LoadingButton
+        size="small"
+        color="success"
         onClick={handleSend}
+        endIcon={<SendIcon />}
+        loading={loading}
+        loadingPosition="end"
+        variant="contained"
+        disabled={loading}
       >
-        <SendRoundedIcon color="success" />
-      </IconButton>
-    </Paper>
+        Send
+      </LoadingButton>
+    </Box>
   );
 }
