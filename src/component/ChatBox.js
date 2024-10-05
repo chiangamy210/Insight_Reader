@@ -46,11 +46,18 @@ export function ChatBox() {
       setLoading(false);
     }
   }
-
-  const MessageBubble = styled(Box)(({ isUser }) => ({
+  //TODO: fix long answer **problem
+  const MessageBubble = styled(Box, {
+    shouldForwardProp: (prop) => prop !== "isUser",
+  })(({ isUser }) => ({
+    padding: 10,
+    margin: 5,
+    borderRadius: 10,
     maxWidth: "70%",
-    color: green,
+    display: "flex",
     alignSelf: isUser ? "flex-end" : "flex-start",
+    background: isUser ? "pink" : "blue",
+    color: isUser ? "white" : "white",
   }));
 
   return (
@@ -65,11 +72,9 @@ export function ChatBox() {
       }}
     >
       {messages.map((message) => (
-        <Box key={message.id}>
-          <MessageBubble>
-            <Typography variant="body1">{message.text}</Typography>
-          </MessageBubble>
-        </Box>
+        <MessageBubble key={message.id} isUser={message.isUser}>
+          <Typography variant="body1">{message.text}</Typography>
+        </MessageBubble>
       ))}
 
       <Box
