@@ -27,10 +27,6 @@ export async function chat(req) {
     conversationHistory.push({ sender: "User", text: userInput });
     conversationHistory.push({ sender: "AI", text: aiResponse });
 
-    //TODO fiqureout prompt context conversationHistory...
-
-    console.log("fullPrompt", fullPrompt);
-
     return aiResponse;
   } catch (error) {
     console.error("Error generating content:", error);

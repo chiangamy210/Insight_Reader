@@ -3,11 +3,6 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
 
 export function InputBox({ handleChange, handleSend, loading, inputValue }) {
-  const StyledTextField = styled(TextField)({
-    flexGrow: 1,
-    marginRight: "8px",
-  });
-
   return (
     <Box
       component="form"
@@ -31,8 +26,8 @@ export function InputBox({ handleChange, handleSend, loading, inputValue }) {
         }}
       />
       <LoadingButton
+        style={{ backgroundColor: "#27A2BB" }}
         size="small"
-        color="success"
         onClick={handleSend}
         endIcon={<SendIcon />}
         loading={loading}

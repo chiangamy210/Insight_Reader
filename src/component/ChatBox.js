@@ -1,115 +1,7 @@
-// import { useState } from "react";
-// import { InputBox } from "./InputBox";
-// import axios from "axios";
-// import { Box, Paper, styled, Typography } from "@mui/material";
-// import { green } from "@mui/material/colors";
-// // import ReactMarkdown from "react-markdown";
-
-// //TODO modify ui
-// export function ChatBox() {
-//   const [loading, setLoading] = useState(false);
-//   const [inputValue, setInputValue] = useState("");
-//   const [messages, setMessages] = useState([]);
-
-//   const DOAMIN = "http://localhost:5001";
-
-//   function handleChange(e) {
-//     const value = e.target.value;
-//     setInputValue(value);
-//   }
-
-//   function splitLongMessage(text, chunkSize = 500) {
-//     const chunks = [];
-//     for (let i = 0; i < text.length; i += chunkSize) {
-//       chunks.push(text.slice(i, i + chunkSize));
-//     }
-//     return chunks;
-//   }
-//   async function handleSend() {
-//     try {
-//       const question = inputValue;
-//       if (inputValue !== "") {
-//         const newMessage = {
-//           id: Date.now(),
-//           text: inputValue,
-//           isUser: true,
-//         };
-//         setLoading(true);
-//         setMessages((prevMessage) => [...prevMessage, newMessage]);
-//         setInputValue("");
-//       }
-
-//       const response = await axios.get(`${DOAMIN}/chat`, {
-//         params: { question },
-//       });
-
-//       const botMessage = {
-//         id: Date.now(),
-//         text: response.data,
-//         isUser: false,
-//       };
-
-//       setMessages((prevMessage) => [...prevMessage, botMessage]);
-//     } catch (error) {
-//       console.error(error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
-
-//   //TODO: fix long answer **problem
-//   const MessageBubble = styled(Box, {
-//     shouldForwardProp: (prop) => prop !== "isUser",
-//   })(({ isUser }) => ({
-//     padding: 10,
-//     margin: 5,
-//     borderRadius: 10,
-//     maxWidth: "70%",
-//     display: "flex",
-//     alignSelf: isUser ? "flex-end" : "flex-start",
-//     background: isUser ? "pink" : "blue",
-//     color: isUser ? "white" : "white",
-//   }));
-
-//   return (
-//     <Paper
-//       sx={{
-//         p: "2px 4px",
-//         display: "flex",
-//         flexDirection: "column",
-//         alignItems: "center",
-//         width: 700,
-//         minHeight: 300,
-//       }}
-//     >
-//       {messages.map((message) => (
-//         <MessageBubble key={message.id} isUser={message.isUser}>
-//           <Typography>{message.text}</Typography>
-//         </MessageBubble>
-//       ))}
-
-//       <Box
-//         sx={{
-//           width: "100%",
-//           marginTop: "auto",
-//           padding: "5px",
-//         }}
-//       >
-//         <InputBox
-//           handleChange={handleChange}
-//           handleSend={handleSend}
-//           loading={loading}
-//           inputValue={inputValue}
-//         />
-//       </Box>
-//     </Paper>
-//   );
-// }
-
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InputBox } from "./InputBox";
 import axios from "axios";
-import { Box, Paper, styled, Typography } from "@mui/material";
+import { Box, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 
@@ -117,15 +9,22 @@ export function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
+  const messageEl = useRef("");
 
   const DOAMIN = "http://localhost:5001";
+
+  useEffect(() => {
+    if (messageEl.current) {
+      messageEl.current.scrollTop = messageEl.current.scrollHeight;
+    }
+  }, [messages]);
 
   function handleChange(e) {
     const value = e.target.value;
     setInputValue(value);
   }
 
-  function splitLongMessage(text, chunkSize = 2000) {
+  function splitLongMessage(text, chunkSize = 2500) {
     const chunks = [];
     let startIndex = 0;
 
@@ -187,49 +86,66 @@ export function ChatBox() {
   const MessageBubble = styled(Box, {
     shouldForwardProp: (prop) => prop !== "isUser",
   })(({ isUser }) => ({
-    padding: 10,
+    padding: "0px 15px",
     margin: 5,
-    borderRadius: 10,
-    maxWidth: "70%",
+    borderRadius: 25,
+    maxWidth: isUser ? "70%" : "100%",
     display: "flex",
     alignSelf: isUser ? "flex-end" : "flex-start",
-    background: isUser ? "pink" : "blue",
-    color: isUser ? "white" : "white",
+    background: isUser ? "#FAB10C" : "#D6D6D6",
+    color: isUser ? "white" : "black",
+    letterSpacing: 2,
+    fontFamily: "Microsoft Yahei",
   }));
 
   return (
-    <Paper
-      sx={{
-        p: "2px 4px",
+    <div
+      style={{
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: 700,
+        justifyContent: "center",
         minHeight: 300,
+        maxHeight: 700,
+        maxWidth: 690,
       }}
     >
-      {messages.map((message) => (
-        <MessageBubble key={message.id} isUser={message.isUser}>
-          <Typography>
-            <ReactMarkdown>{message.text}</ReactMarkdown>
-          </Typography>
-        </MessageBubble>
-      ))}
-
       <Box
+        ref={messageEl}
         sx={{
+          p: "20px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           width: "100%",
-          marginTop: "auto",
-          padding: "5px",
+
+          overflowY: "auto",
         }}
       >
-        <InputBox
-          handleChange={handleChange}
-          handleSend={handleSend}
-          loading={loading}
-          inputValue={inputValue}
-        />
+        {messages.map((message) => (
+          <MessageBubble key={message.id} isUser={message.isUser}>
+            <div>
+              <ReactMarkdown>{message.text}</ReactMarkdown>
+            </div>
+          </MessageBubble>
+        ))}
+
+        <Box
+          sx={{
+            width: "100%",
+            bottom: 20,
+            display: "flex",
+            justifyContent: "center",
+            position: "fixed",
+            background: "white",
+          }}
+        >
+          <InputBox
+            handleChange={handleChange}
+            handleSend={handleSend}
+            loading={loading}
+            inputValue={inputValue}
+          />
+        </Box>
       </Box>
-    </Paper>
+    </div>
   );
 }
