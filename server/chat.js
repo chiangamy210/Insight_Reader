@@ -4,15 +4,34 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+let conversationHistory = [];
+let context = "";
+
 export async function chat(req) {
   const geminiAiApiKey = process.env.GEMINI_API_KEY;
-
   const genAI = new GoogleGenerativeAI(geminiAiApiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const userInput = req;
+  let fullPrompt = "";
 
   try {
-    const result = await model.generateContent(req);
-    return result.response.candidates[0].content.parts[0].text;
+    let context = conversationHistory
+      .map((msg) => `${msg.sender}:${msg.text}`)
+      .join("\n");
+
+    fullPrompt = `${context}\nUser:${userInput}`;
+    const result = await model.generateContent(fullPrompt);
+
+    const aiResponse = result.response.candidates[0].content.parts[0].text;
+
+    conversationHistory.push({ sender: "User", text: userInput });
+    conversationHistory.push({ sender: "AI", text: aiResponse });
+
+    //TODO fiqureout prompt context conversationHistory...
+
+    console.log("fullPrompt", fullPrompt);
+
+    return aiResponse;
   } catch (error) {
     console.error("Error generating content:", error);
   }

@@ -31,7 +31,6 @@ const port = 5001;
 //   }
 // });
 
-//ask gemini a tchat with user
 app.get("/chat", async (req, res) => {
   try {
     const result = await chat(req.query.question);
