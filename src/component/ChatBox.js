@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { InputBox } from "./InputBox";
 import axios from "axios";
-import { Box, styled } from "@mui/material";
+import { Box, IconButton, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
+import InputFileUpload from "./Upload";
+import { DisplayFiles } from "./DisplayFiles";
 
 export function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
   const messageEl = useRef("");
+  const [files, setFiles] = useState([]);
 
   const DOAMIN = "http://localhost:5001";
 
@@ -48,41 +51,6 @@ export function ChatBox() {
     return chunks;
   }
 
-  async function handleSend() {
-    try {
-      const question = inputValue;
-      if (inputValue !== "") {
-        const newMessage = {
-          id: uuidv4(),
-          text: inputValue,
-          isUser: true,
-        };
-        setLoading(true);
-        setMessages((prevMessage) => [...prevMessage, newMessage]);
-        setInputValue("");
-      }
-
-      const response = await axios.get(`${DOAMIN}/chat`, {
-        params: { question },
-      });
-
-      const botMessageChunks = splitLongMessage(response.data);
-
-      botMessageChunks.forEach((chunk) => {
-        const botMessage = {
-          id: uuidv4(),
-          text: chunk,
-          isUser: false,
-        };
-        setMessages((prevMessage) => [...prevMessage, botMessage]);
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   const MessageBubble = styled(Box, {
     shouldForwardProp: (prop) => prop !== "isUser",
   })(({ isUser }) => ({
@@ -98,6 +66,60 @@ export function ChatBox() {
     fontFamily: "Microsoft Yahei",
   }));
 
+  async function handleUpload(event) {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < event.target.files.length; i++) {
+        formData.append("files", event.target.files[i]);
+      }
+      const response = await axios.post(`${DOAMIN}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const filePaths = response.data;
+      setFiles(filePaths);
+    } catch (error) {
+      console.error("file upload error: ", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSend() {
+    try {
+      const question = inputValue;
+      if (inputValue !== "") {
+        const newMessage = {
+          id: uuidv4(),
+          text: inputValue,
+          isUser: true,
+        };
+        setLoading(true);
+        setMessages((prevMessage) => [...prevMessage, newMessage]);
+        setInputValue("");
+      }
+
+      const response = await axios.get(`${DOAMIN}/chat`, {
+        params: { question, filePaths: files.join(",") },
+      });
+      console.log(response, "result");
+      const botMessageChunks = splitLongMessage(response.data);
+
+      botMessageChunks.forEach((chunk) => {
+        const botMessage = {
+          id: uuidv4(),
+          text: chunk,
+          isUser: false,
+        };
+        setMessages((prevMessage) => [...prevMessage, botMessage]);
+      });
+    } catch (error) {
+      console.error("chat error: ", error);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div
       style={{
@@ -105,7 +127,7 @@ export function ChatBox() {
         justifyContent: "center",
         minHeight: 300,
         maxHeight: 700,
-        maxWidth: 690,
+        maxWidth: 900,
       }}
     >
       <Box
@@ -138,12 +160,16 @@ export function ChatBox() {
             background: "white",
           }}
         >
+          <InputFileUpload handleUpload={handleUpload} />
           <InputBox
             handleChange={handleChange}
             handleSend={handleSend}
             loading={loading}
             inputValue={inputValue}
           />
+
+          <DisplayFiles fileList={files} />
+          <div style={{ marginTop: 30 }}></div>
         </Box>
       </Box>
     </div>

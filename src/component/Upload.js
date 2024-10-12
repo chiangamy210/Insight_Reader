@@ -25,13 +25,7 @@ export default function InputFileUpload({ handleUpload }) {
       startIcon={<CloudUploadIcon />}
       style={{ margin: 30, background: "#858FCD" }}
     >
-      Upload files
-      <VisuallyHiddenInput
-        type="file"
-        // onChange={(event) => console.log(event.target.files)}
-        onChange={handleUpload}
-        multiple
-      />
+      <VisuallyHiddenInput type="file" onChange={handleUpload} multiple />
     </Button>
   );
 }

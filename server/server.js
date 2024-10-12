@@ -22,42 +22,41 @@ const upload = multer({ storage: storage });
 
 const port = 5001;
 
-// app.get("/chat", async (req, res) => {
-//   try {
-//     const resp = await chat(filePath, req.query.question);
-//     res.send(resp.text);
-//   } catch (e) {
-//     res.send(`chat is wrong ${e}`);
-//   }
-// });
-
-app.get("/chat", async (req, res) => {
-  try {
-    const result = await chat(req.query.question);
-    res.send(result);
-  } catch (error) {
-    console.error("Error generating content:", error);
-  }
-});
-
 // post up to 4 files
+let filePaths;
 app.post("/upload", upload.array("files", 4), (req, res) => {
   try {
     if (!req.files) {
       return res.status(400).send("No files uploaded.");
     }
 
-    const filePaths = req.files.map((file) => file.path);
-    res.send(filePaths.join(", ") + " upload sueccesfeully");
+    filePaths = req.files.map((file) => file.path);
+    // res.send(filePaths.join(", ") + " upload sueccesfeully");
+    res.send(filePaths);
   } catch (e) {
     res.send(`uppload error ${e}`);
+  }
+});
+
+app.get("/chat", async (req, res) => {
+  try {
+    const question = req.query.question;
+    console.log("question", question);
+
+    const filePaths = req.query.filePaths ? req.query.filePaths.split(",") : [];
+    console.log("filePaths", filePaths);
+    const result = await chat(question, filePaths);
+
+    res.send(result);
+  } catch (error) {
+    console.error("Error generating content:", error);
+    res.status(500).send("Error generating content:");
   }
 });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
 //for single upload
 // app.post("/upload", upload.single("file"), (req, res) => {
 //   rea.send(req);

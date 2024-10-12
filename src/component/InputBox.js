@@ -15,7 +15,7 @@ export function InputBox({ handleChange, handleSend, loading, inputValue }) {
     >
       <TextField
         sx={{ ml: 1, flex: 1 }}
-        placeholder="Upload your PDF files and you can ask any question about the files"
+        placeholder="Ask me anything, or upload a file and ask me questions about them"
         value={inputValue}
         onChange={handleChange}
         onKeyDown={(e) => {
@@ -34,9 +34,7 @@ export function InputBox({ handleChange, handleSend, loading, inputValue }) {
         loadingPosition="end"
         variant="contained"
         disabled={loading}
-      >
-        Send
-      </LoadingButton>
+      ></LoadingButton>
     </Box>
   );
 }
