@@ -136,32 +136,53 @@ export async function chat(req, filePath = "") {
   try {
     if (filePath.length > 0) {
       let data;
-
+      let vectorStore;
       // Load and process each PDF file
       for (const path of filePath) {
         const loader = new PDFLoader(path);
         data = await loader.load();
+
+        const textSplitter = new RecursiveCharacterTextSplitter({
+          chunkSize: 500,
+          chunkOverlap: 0,
+        });
+
+        const spiltDocs = await textSplitter.splitDocuments(data);
+        console.log("splitDocx", spiltDocs);
+        vectorStore = await MemoryVectorStore.fromDocuments(
+          spiltDocs,
+          embeddingModel
+        );
       }
 
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 500,
-        chunkOverlap: 0,
-      });
+      // const textSplitter = new RecursiveCharacterTextSplitter({
+      //   chunkSize: 500,
+      //   chunkOverlap: 0,
+      // });
 
-      const spiltDocs = await textSplitter.splitDocuments(data);
+      // const spiltDocs = await textSplitter.splitDocuments(data);
+      // console.log("splitDocx", spiltDocs);
+      // const vectorStore = await MemoryVectorStore.fromDocuments(
+      //   spiltDocs,
+      //   embeddingModel
+      // );
 
-      const vectorStore = await MemoryVectorStore.fromDocuments(
-        spiltDocs,
-        embeddingModel
-      );
-
-      const template = `Use the following pieces of context to answer the question at the end.
-        If you don't know the answer, just say that this file doesn't mention it, don't try to make up an answer.
-        Use three sentences maximum and keep the answer as concise as possible.
-
-        {context}
-        Question: {question}
-        Helpful Answer:`;
+      const template = `
+      You are a helpful assistant. When the user asks questions related to a specific article , use the content from the article to answer. If the question is unrelated to the article, answer based on general knowledge.
+      
+      1. Recognizing Article Questions:
+         If the user mentions 'article', 'document', or words in the article, assume it refers to the article content. Provide a concise and accurate response based on the article. If the article does not contain the answer, respond with: "The document does not mention that."
+      
+      2. General Queries:
+         If the question does not mention an article or file, treat it as a general question and answer with what you know, you don't have to relate to the article.
+      
+      3. Language Matching:
+         Respond in the same language the user uses to ask the question. If the user asks in Chinese, respond in Chinese. If the user asks in English, respond in English.
+      
+      {context}
+      Question: {question}
+      Helpful Answer:
+      `;
 
       const promptTemplate = PromptTemplate.fromTemplate(template);
       const chain = RetrievalQAChain.fromLLM(
@@ -173,8 +194,7 @@ export async function chat(req, filePath = "") {
       );
 
       const response = await chain.call({ query: userInput });
-      console.log("response", response);
-      return response;
+      return response.text;
     }
 
     let context = conversationHistory
@@ -196,4 +216,4 @@ export async function chat(req, filePath = "") {
 }
 
 export default chat;
-// TODO show the pdf reponse to frontend, fix add history to the reponse
+// TODO figure out how to make the Ai 's answer by fixing prompt
