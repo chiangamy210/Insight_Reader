@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import InputFileUpload from "./Upload";
 import { DisplayFiles } from "./DisplayFiles";
 
+//TODO modify ui
 export function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -103,7 +104,6 @@ export function ChatBox() {
       const response = await axios.get(`${DOAMIN}/chat`, {
         params: { question, filePaths: files.join(",") },
       });
-      console.log(response, "result");
       const botMessageChunks = splitLongMessage(response.data);
 
       botMessageChunks.forEach((chunk) => {

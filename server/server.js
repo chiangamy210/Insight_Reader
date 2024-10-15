@@ -41,10 +41,10 @@ app.post("/upload", upload.array("files", 4), (req, res) => {
 app.get("/chat", async (req, res) => {
   try {
     const question = req.query.question;
-    console.log("question", question);
+    // console.log("question", question);
 
     const filePaths = req.query.filePaths ? req.query.filePaths.split(",") : [];
-    console.log("filePaths", filePaths);
+    // console.log("filePaths", filePaths);
     const result = await chat(question, filePaths);
 
     res.send(result);
