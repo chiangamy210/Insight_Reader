@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { InputBox } from "./InputBox";
 import axios from "axios";
-import { Box, IconButton, styled } from "@mui/material";
+import { Box, Paper, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
-import InputFileUpload from "./Upload";
-import { DisplayFiles } from "./DisplayFiles";
 
 //TODO modify ui
 export function ChatBox() {
@@ -14,7 +12,8 @@ export function ChatBox() {
   const [messages, setMessages] = useState([]);
   const messageEl = useRef("");
   const [files, setFiles] = useState([]);
-
+  const [filenames, setfileNames] = useState([]);
+  let fileList = [];
   const DOAMIN = "http://localhost:5001";
 
   useEffect(() => {
@@ -72,8 +71,10 @@ export function ChatBox() {
     try {
       const formData = new FormData();
       for (let i = 0; i < event.target.files.length; i++) {
+        fileList.push(event.target.files[i].name);
         formData.append("files", event.target.files[i]);
       }
+      setfileNames(fileList);
       const response = await axios.post(`${DOAMIN}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -120,6 +121,19 @@ export function ChatBox() {
       setLoading(false);
     }
   }
+
+  function DisplayFiles({ fileList }) {
+    if (fileList.length > 0) {
+      return (
+        <ul>
+          {Array.from(fileList).map((file, index) => (
+            <li key={index}>{file}</li>
+          ))}
+        </ul>
+      );
+      return <div>{fileList}</div>;
+    }
+  }
   return (
     <div
       style={{
@@ -150,27 +164,27 @@ export function ChatBox() {
           </MessageBubble>
         ))}
 
-        <Box
+        <Paper
           sx={{
-            width: "100%",
-            bottom: 20,
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-between",
             position: "fixed",
+            flexDirection: "column",
+            bottom: 30,
+            width: 700,
+            height: files.length > 0 ? files.length * 20 + 60 : 60,
             background: "white",
           }}
         >
-          <InputFileUpload handleUpload={handleUpload} />
+          <DisplayFiles fileList={filenames} />
           <InputBox
             handleChange={handleChange}
             handleSend={handleSend}
             loading={loading}
             inputValue={inputValue}
+            handleUpload={handleUpload}
           />
-
-          <DisplayFiles fileList={files} />
-          <div style={{ marginTop: 30 }}></div>
-        </Box>
+        </Paper>
       </Box>
     </div>
   );
