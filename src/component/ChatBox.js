@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { InputBox } from "./InputBox";
 import axios from "axios";
-import { Box, Paper, styled } from "@mui/material";
+import { Box, IconButton, Paper, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
+import ClearIcon from "@mui/icons-material/Clear";
 
 //TODO modify ui
 export function ChatBox() {
@@ -12,7 +13,7 @@ export function ChatBox() {
   const [messages, setMessages] = useState([]);
   const messageEl = useRef("");
   const [files, setFiles] = useState([]);
-  const [filenames, setfileNames] = useState([]);
+  const [fileNames, setFileNames] = useState([]);
   let fileList = [];
   const DOAMIN = "http://localhost:5001";
 
@@ -74,7 +75,7 @@ export function ChatBox() {
         fileList.push(event.target.files[i].name);
         formData.append("files", event.target.files[i]);
       }
-      setfileNames(fileList);
+      setFileNames(fileList);
       const response = await axios.post(`${DOAMIN}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -125,14 +126,55 @@ export function ChatBox() {
   function DisplayFiles({ fileList }) {
     if (fileList.length > 0) {
       return (
-        <ul>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            flexDirection: "column",
+          }}
+        >
           {Array.from(fileList).map((file, index) => (
-            <li key={index}>{file}</li>
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                border: "2px solid #D6D6D6 ",
+                color: " #858FCD",
+                margin: 2,
+                borderRadius: 10,
+                maxWidth: `${file.length}vm`,
+                minWidth: 300,
+              }}
+            >
+              <IconButton
+                onClick={() => {
+                  removeFile(index);
+                }}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <div key={index} style={{ paddingLeft: 10 }}>
+                  {file}
+                </div>
+                <ClearIcon style={{ color: "#D6D6D6" }} />
+              </IconButton>
+            </div>
           ))}
-        </ul>
+        </div>
       );
       return <div>{fileList}</div>;
     }
+  }
+
+  function removeFile(fileIndex) {
+    const updatedFileNames = fileNames.filter(
+      (_, index) => fileIndex !== index
+    );
+    setFileNames(updatedFileNames);
+
+    const updatedFiles = files.filter((_, index) => fileIndex !== index);
+    setFiles(updatedFiles);
   }
   return (
     <div
@@ -152,7 +194,6 @@ export function ChatBox() {
           flexDirection: "column",
           alignItems: "center",
           width: "100%",
-
           overflowY: "auto",
         }}
       >
@@ -167,16 +208,17 @@ export function ChatBox() {
         <Paper
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: fileList.length > 0 ? "space-between" : "center",
             position: "fixed",
             flexDirection: "column",
             bottom: 30,
             width: 700,
-            height: files.length > 0 ? files.length * 20 + 60 : 60,
+            height: files.length > 0 ? files.length * 45 + 60 : 30,
             background: "white",
+            padding: 2,
           }}
         >
-          <DisplayFiles fileList={filenames} />
+          <DisplayFiles fileList={fileNames} />
           <InputBox
             handleChange={handleChange}
             handleSend={handleSend}
@@ -189,3 +231,4 @@ export function ChatBox() {
     </div>
   );
 }
+// TODO impelement remove function use index
