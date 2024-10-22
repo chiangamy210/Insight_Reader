@@ -1,25 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { InputBox } from "./InputBox";
 import axios from "axios";
-import { Box, IconButton, Paper, styled } from "@mui/material";
+import { Box, IconButton, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 import ClearIcon from "@mui/icons-material/Clear";
 
-//TODO modify ui
 export function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]);
-  const messageEl = useRef("");
+  const lastMessageRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [fileNames, setFileNames] = useState([]);
   let fileList = [];
   const DOAMIN = "http://localhost:5001";
 
   useEffect(() => {
-    if (messageEl.current) {
-      messageEl.current.scrollTop = messageEl.current.scrollHeight;
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -101,21 +100,21 @@ export function ChatBox() {
         setLoading(true);
         setMessages((prevMessage) => [...prevMessage, newMessage]);
         setInputValue("");
+
+        const response = await axios.get(`${DOAMIN}/chat`, {
+          params: { question, filePaths: files.join(",") },
+        });
+        const botMessageChunks = splitLongMessage(response.data);
+
+        botMessageChunks.forEach((chunk) => {
+          const botMessage = {
+            id: uuidv4(),
+            text: chunk,
+            isUser: false,
+          };
+          setMessages((prevMessage) => [...prevMessage, botMessage]);
+        });
       }
-
-      const response = await axios.get(`${DOAMIN}/chat`, {
-        params: { question, filePaths: files.join(",") },
-      });
-      const botMessageChunks = splitLongMessage(response.data);
-
-      botMessageChunks.forEach((chunk) => {
-        const botMessage = {
-          id: uuidv4(),
-          text: chunk,
-          isUser: false,
-        };
-        setMessages((prevMessage) => [...prevMessage, botMessage]);
-      });
     } catch (error) {
       console.error("chat error: ", error);
     } finally {
@@ -126,13 +125,7 @@ export function ChatBox() {
   function DisplayFiles({ fileList }) {
     if (fileList.length > 0) {
       return (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            flexDirection: "column",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "flex-start" }}>
           {Array.from(fileList).map((file, index) => (
             <div
               key={index}
@@ -141,20 +134,25 @@ export function ChatBox() {
                 justifyContent: "space-between",
                 alignItems: "center",
                 border: "2px solid #D6D6D6 ",
-                color: " #858FCD",
+                color: "#858FCD",
                 margin: 2,
                 borderRadius: 10,
-                maxWidth: `${file.length}vm`,
-                minWidth: 300,
               }}
             >
               <IconButton
                 onClick={() => {
                   removeFile(index);
                 }}
-                style={{ display: "flex", alignItems: "center" }}
               >
-                <div key={index} style={{ paddingLeft: 10 }}>
+                <div
+                  style={{
+                    paddingLeft: 10,
+                    fontSize: 14,
+                    overflow: "hidden",
+                    maxWidth: 200,
+                    maxHeight: 30,
+                  }}
+                >
                   {file}
                 </div>
                 <ClearIcon style={{ color: "#D6D6D6" }} />
@@ -163,8 +161,8 @@ export function ChatBox() {
           ))}
         </div>
       );
-      return <div>{fileList}</div>;
     }
+    return null;
   }
 
   function removeFile(fileIndex) {
@@ -176,59 +174,59 @@ export function ChatBox() {
     const updatedFiles = files.filter((_, index) => fileIndex !== index);
     setFiles(updatedFiles);
   }
+
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        minHeight: 300,
-        maxHeight: 700,
-        maxWidth: 900,
-      }}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <Box
-        ref={messageEl}
-        sx={{
-          p: "20px",
+        style={{
+          margin: "10px 50px",
+          maxWidth: 1200,
+          minWidth: 550,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          width: "100%",
+          justifyContent: "center",
           overflowY: "auto",
+          flexGrow: 1,
+          paddingBottom: 130,
+          paddingTop: 20,
         }}
       >
-        {messages.map((message) => (
-          <MessageBubble key={message.id} isUser={message.isUser}>
+        {messages.map((message, index) => (
+          <MessageBubble
+            key={message.id}
+            isUser={message.isUser}
+            ref={index === messages.length - 1 ? lastMessageRef : null}
+          >
             <div>
               <ReactMarkdown>{message.text}</ReactMarkdown>
             </div>
           </MessageBubble>
         ))}
-
-        <Paper
-          sx={{
-            display: "flex",
-            justifyContent: fileList.length > 0 ? "space-between" : "center",
-            position: "fixed",
-            flexDirection: "column",
-            bottom: 30,
-            width: 700,
-            height: files.length > 0 ? files.length * 45 + 60 : 30,
-            background: "white",
-            padding: 2,
-          }}
-        >
-          <DisplayFiles fileList={fileNames} />
-          <InputBox
-            handleChange={handleChange}
-            handleSend={handleSend}
-            loading={loading}
-            inputValue={inputValue}
-            handleUpload={handleUpload}
-          />
-        </Paper>
       </Box>
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          background: "white",
+          padding: "10px 0",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <DisplayFiles fileList={fileNames} />
+        <InputBox
+          handleChange={handleChange}
+          handleSend={handleSend}
+          loading={loading}
+          inputValue={inputValue}
+          handleUpload={handleUpload}
+        />
+      </div>
     </div>
   );
 }
-// TODO impelement remove function use index

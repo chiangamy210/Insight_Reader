@@ -31,7 +31,6 @@ app.post("/upload", upload.array("files", 4), (req, res) => {
     }
 
     filePaths = req.files.map((file) => file.path);
-    // res.send(filePaths.join(", ") + " upload sueccesfeully");
     res.send(filePaths);
   } catch (e) {
     res.send(`uppload error ${e}`);

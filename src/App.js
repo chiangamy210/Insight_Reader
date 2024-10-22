@@ -10,9 +10,23 @@ function App() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        paddingTop: 130,
+        textAlign: "center",
       }}
     >
-      <h1 style={{ marginTop: 100 }}>Welcome to Insight Reader</h1>
+      <h1
+        style={{
+          paddingTop: 50,
+          paddingBottom: 30,
+          position: "fixed",
+          top: 0,
+          margin: 0,
+          background: "white",
+          width: "100%",
+        }}
+      >
+        Welcome to Insight Reader
+      </h1>
       <ChatBox />
     </div>
   );

@@ -1,4 +1,4 @@
-import { Box, InputBase, styled } from "@mui/material";
+import { Box, InputAdornment, OutlinedInput, styled } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -23,21 +23,13 @@ export function InputBox({
   });
 
   return (
-    <Box component="form" style={{ position: "relative" }}>
-      <Button
-        component="label"
-        role={undefined}
-        variant="text"
-        color="#858FCD"
-        tabIndex={-1}
-        startIcon={<CloudUploadIcon />}
-        style={{ color: "#858FCD" }}
-      >
-        <VisuallyHiddenInput type="file" onChange={handleUpload} multiple />
-      </Button>
-      <InputBase
-        style={{ marginLeft: "auto", width: "80%" }}
-        placeholder="Ask me anything, or upload a file and ask me questions about them"
+    <Box component="form">
+      <OutlinedInput
+        id="outlined-multiline-flexible"
+        multiline
+        maxRows={4}
+        style={{ maxWidth: 1200, minWidth: 550, borderRadius: 35 }}
+        placeholder="Ask me anything, or upload a file and ask me questions about it"
         value={inputValue}
         onChange={handleChange}
         onKeyDown={(e) => {
@@ -46,20 +38,42 @@ export function InputBox({
             handleSend();
           }
         }}
+        endAdornment={
+          <InputAdornment position="end">
+            <LoadingButton
+              style={{
+                color: "#27A2BB",
+              }}
+              size="small"
+              onClick={handleSend}
+              endIcon={<SendIcon />}
+              loading={loading}
+              loadingPosition="end"
+              variant="text"
+              disabled={loading}
+            ></LoadingButton>
+          </InputAdornment>
+        }
+        startAdornment={
+          <InputAdornment position="start">
+            <Button
+              component="label"
+              role={undefined}
+              variant="text"
+              color="#858FCD"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              style={{ color: "#858FCD" }}
+            >
+              <VisuallyHiddenInput
+                type="file"
+                onChange={handleUpload}
+                multiple
+              />
+            </Button>
+          </InputAdornment>
+        }
       />
-      <LoadingButton
-        style={{
-          color: "#27A2BB",
-        }}
-        size="small"
-        onClick={handleSend}
-        endIcon={<SendIcon />}
-        loading={loading}
-        loadingPosition="end"
-        variant="text"
-        disabled={loading}
-      ></LoadingButton>
     </Box>
   );
 }
-//TODO fix inputBoox position
