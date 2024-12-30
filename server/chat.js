@@ -199,4 +199,3 @@ export default chat;
 // }
 
 // export default chat;
-// TODO figure out how to make the Ai 's answer by fixing prompt

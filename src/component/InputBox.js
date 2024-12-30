@@ -28,8 +28,12 @@ export function InputBox({
         id="outlined-multiline-flexible"
         multiline
         maxRows={4}
-        style={{ maxWidth: 1200, minWidth: 550, borderRadius: 35 }}
-        placeholder="Ask me anything, or upload a file and ask me questions about it"
+        sx={{
+          width: "90vw",
+          maxWidth: 1200,
+          borderRadius: 35,
+        }}
+        placeholder="Ask me anything"
         value={inputValue}
         onChange={handleChange}
         onKeyDown={(e) => {
@@ -77,3 +81,5 @@ export function InputBox({
     </Box>
   );
 }
+//TODO fix iphone responsive
+//deploy client and server

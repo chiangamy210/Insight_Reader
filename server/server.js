@@ -40,10 +40,8 @@ app.post("/upload", upload.array("files", 4), (req, res) => {
 app.get("/chat", async (req, res) => {
   try {
     const question = req.query.question;
-    // console.log("question", question);
 
     const filePaths = req.query.filePaths ? req.query.filePaths.split(",") : [];
-    // console.log("filePaths", filePaths);
     const result = await chat(question, filePaths);
 
     res.send(result);
@@ -56,6 +54,7 @@ app.get("/chat", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
 //for single upload
 // app.post("/upload", upload.single("file"), (req, res) => {
 //   rea.send(req);
