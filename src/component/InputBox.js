@@ -81,5 +81,4 @@ export function InputBox({
     </Box>
   );
 }
-//TODO fix iphone responsive
 //deploy client and server
