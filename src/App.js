@@ -143,7 +143,6 @@ function App() {
         setLoading(true);
         setMessages((prevMessage) => [...prevMessage, newMessage]);
         setInputValue("");
-
         const response = await axios.get(`${DOAMIN}/chat`, {
           params: { question, filePaths: files.join(",") },
         });
@@ -180,7 +179,7 @@ function App() {
           paddingBottom: "2vh",
           height: "3vh",
           position: "fixed",
-          top: 0,
+          top: messages.length > 0 ? "0px" : "35vh",
           margin: 0,
           background: "white",
           width: "100vw",
@@ -193,7 +192,7 @@ function App() {
       <div
         style={{
           position: "fixed",
-          bottom: 0,
+          bottom: messages.length > 0 ? "0px" : "40vh",
           width: "100%",
           paddingBottom: "1vh",
           background: "white",

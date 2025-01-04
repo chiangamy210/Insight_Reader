@@ -26,31 +26,6 @@ export function ChatBox({ messages }) {
           {children}
         </Box>
       );
-      // return inline ? (
-      //   <Box
-      //     component="code"
-      //     sx={{
-      //       padding: "0.2em",
-      //       borderRadius: "4px",
-      //       wordBreak: "break-word",
-      //     }}
-      //     // {...props}
-      //   >
-      //     {children}
-      //   </Box>
-      // ) : (
-      //   <Box
-      //     component="pre"
-      //     sx={{
-      //       padding: "1em",
-      //       borderRadius: "4px",
-      //       whiteSpace: "pre-wrap",
-      //     }}
-      //     // {...props}
-      //   >
-      //     {children}
-      //   </Box>
-      // );
     },
   };
 
