@@ -35,7 +35,6 @@ export async function chat(req, filePath = "") {
       3. Language Matching:
          Reply the same language the user use. If the question is in Chinese, answer in Chinese. If the question is in English, answer in English.
       
-      // 4.use bullet to organize your answer
       
       Article Content: {data}
       Question: {question}

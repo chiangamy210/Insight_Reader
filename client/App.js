@@ -91,7 +91,7 @@ function App() {
         </div>
       );
     }
-    return <div>you can upload up to 3 files</div>;
+    return <div>you can upload up to 3 pdf files</div>;
   }
 
   function removeFile(fileIndex) {

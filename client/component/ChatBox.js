@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Box, IconButton, styled } from "@mui/material";
+import { useEffect, useRef } from "react";
+import { Box, styled } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 
 export function ChatBox({ messages }) {
