@@ -11,7 +11,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://insight-reader-server.vercel.app/",
+    origin: "https://insight-reader-client.vercel.app/",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
@@ -73,3 +73,5 @@ app.listen(port, () => {
 //     res.send(`uppload error ${e}`);
 //   }
 // });
+
+//add delete file API
