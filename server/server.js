@@ -7,7 +7,15 @@ import chat from "./chat.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+// app.use(cors());
+
+app.use(
+  cors({
+    origin: "https://insight-reader-server.vercel.app/",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

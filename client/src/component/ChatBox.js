@@ -81,4 +81,3 @@ export function ChatBox({ messages }) {
     </div>
   );
 }
-//TODO text overflow contain

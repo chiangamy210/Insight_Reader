@@ -15,7 +15,7 @@ function App() {
   const [files, setFiles] = useState([]);
   const [fileNames, setFileNames] = useState([]);
   let fileList = [];
-  const DOAMIN = "http://localhost:5001";
+  const DOAMIN = "https://insight-reader-server.vercel.app/";
 
   function splitLongMessage(text, chunkSize = 2500) {
     const chunks = [];
