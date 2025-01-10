@@ -11,7 +11,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://insight-reader-client.vercel.app/",
+    origin: "https://insight-reader-client.vercel.app",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
