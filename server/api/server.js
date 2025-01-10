@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import cors from "cors";
 import dotenv from "dotenv";
-import chat from "./chat.js";
+import chat from "../chat.js";
 
 dotenv.config();
 

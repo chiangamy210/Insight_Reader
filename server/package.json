@@ -2,9 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "This is a web app that use AI to anser questions from the uploaded pdf files by users",
-  "main": "server.js",
+  "main": "./api/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node /api/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
