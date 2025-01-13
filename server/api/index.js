@@ -30,9 +30,9 @@ const upload = multer({ storage: storage });
 
 const port = 5001;
 
-// post up to 4 files
+// post up to 3 files
 let filePaths;
-app.post("/upload", upload.array("files", 4), (req, res) => {
+app.post("/upload", upload.array("files", 3), (req, res) => {
   try {
     if (!req.files) {
       return res.status(400).send("No files uploaded.");
@@ -77,3 +77,4 @@ app.listen(port, () => {
 // });
 
 //add delete file API
+//TODO fix multer upload file to vercel
