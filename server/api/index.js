@@ -1,13 +1,13 @@
 import express from "express";
-import multer from "multer";
+// import multer from "multer";
 import cors from "cors";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import chat from "../chat.js";
+import handler from "./upload.js";
 
-dotenv.config();
+// dotenv.config();
 
 const app = express();
-// app.use(cors());
 
 app.use(
   cors({
@@ -17,33 +17,35 @@ app.use(
   })
 );
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 const port = 5001;
 
-// post up to 3 files
-let filePaths;
-app.post("/upload", upload.array("files", 3), (req, res) => {
-  try {
-    if (!req.files) {
-      return res.status(400).send("No files uploaded.");
-    }
+app.post("/upload", handler);
 
-    filePaths = req.files.map((file) => file.path);
-    res.send(filePaths);
-  } catch (e) {
-    res.send(`uppload error ${e}`);
-  }
-});
+// post up to 3 files
+// let filePaths;
+// app.post("/upload", upload.array("files", 3), (req, res) => {
+//   try {
+//     if (!req.files) {
+//       return res.status(400).send("No files uploaded.");
+//     }
+
+//     filePaths = req.files.map((file) => file.path);
+//     res.send(filePaths);
+//   } catch (e) {
+//     res.send(`uppload error ${e}`);
+//   }
+// });
 
 app.get("/chat", async (req, res) => {
   try {
@@ -64,17 +66,6 @@ app.get("/", (req, res) => res.send("Express on Vercel"));
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-//for single upload
-// app.post("/upload", upload.single("file"), (req, res) => {
-//   rea.send(req);
-//   try {
-//     filePath = req.file.path;
-//     res.send(filePath + "upload sueccesfeully");
-//   } catch (e) {
-//     res.send(`uppload error ${e}`);
-//   }
-// });
 
 //add delete file API
 //TODO fix multer upload file to vercel
