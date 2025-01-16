@@ -5,8 +5,6 @@ import dotenv from "dotenv";
 import chat from "../chat.js";
 import handler from "./upload.js";
 
-dotenv.config();
-
 const app = express();
 app.use(
   cors({
@@ -15,6 +13,8 @@ app.use(
     allowedHeaders: ["Content-Type"],
   })
 );
+
+dotenv.config();
 
 const port = 5001;
 
