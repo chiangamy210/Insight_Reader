@@ -15,7 +15,6 @@ function App() {
   const [files, setFiles] = useState([]);
   const [fileNames, setFileNames] = useState([]);
   let fileList = [];
-  // const DOAMIN = "http://localhost:5001";
   const DOAMIN = "https://insight-reader.vercel.app";
 
   function splitLongMessage(text, chunkSize = 2500) {
@@ -122,8 +121,7 @@ function App() {
       const response = await axios.post(`${DOAMIN}/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      const filePaths = response.data;
+      const filePaths = response.data.filePaths;
       setFiles(filePaths);
     } catch (error) {
       console.error("file upload error: ", error);
