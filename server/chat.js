@@ -1,28 +1,42 @@
 // version of using gemini without embedding to answer question
 
-import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+// import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import { PromptTemplate } from "langchain/prompts";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 
 let conversationHistory = [];
 
-export async function chat(req, filePath = "") {
+export async function chat(req, filePaths = "") {
   const geminiAiApiKey = process.env.GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(geminiAiApiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
   const userInput = req;
   let fullPrompt = "";
-
   try {
-    if (filePath.length > 0) {
-      let data = "";
-      for (const path of filePath) {
-        const loader = new PDFLoader(path);
-        const pdfContent = await loader.load();
-        data += pdfContent.map((page) => page.pageContent).join("");
-      }
+    let data = "";
+    if (filePaths.length > 0) {
+      for (const url of filePaths) {
+        // Fetch the PDF content directly from the URL
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch PDF from ${url}: ${response.statusText}`
+          );
+        }
 
+        // Read the response as an array buffer
+        const arrayBuffer = await response.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: "application/pdf" });
+
+        // Use WebPDFLoader to parse the PDF
+        const loader = new WebPDFLoader(blob);
+        const pdfDocuments = await loader.load();
+
+        // Concatenate the content of all pages
+        data += pdfDocuments.map((doc) => doc.pageContent).join("\n");
+      }
       const template = `
       You are a helpful assistant. When the user asks questions related to a specific article , use the content from the article to answer. If the question is unrelated to the article, answer based on what you already know.
       

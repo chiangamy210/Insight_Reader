@@ -6,6 +6,7 @@ import chat from "../chat.js";
 import handler from "./upload.js";
 
 const app = express();
+
 app.use(
   cors({
     origin: "https://insight-reader-client.vercel.app",
@@ -23,7 +24,6 @@ app.post("/upload", handler);
 app.get("/chat", async (req, res) => {
   try {
     const question = req.query.question;
-    console.log("req.query.filePaths", req.query.filePaths);
     const filePaths = req.query.filePaths ? req.query.filePaths.split(",") : [];
     const result = await chat(question, filePaths);
 
@@ -68,6 +68,4 @@ app.listen(port, () => {
 // });
 
 //add delete file API
-//TODO fix multer upload file to vercel
 // check if chat.js handling remote path? or local only?
-//why there are two paths?
