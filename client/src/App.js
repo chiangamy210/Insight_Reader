@@ -12,10 +12,12 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [files, setFiles] = useState([]);
-  const [fileNames, setFileNames] = useState([]);
-  let fileList = [];
+  const [filesPath, setFilesPath] = useState([]);
+  const [localFileList, setlocalFileList] = useState([]);
+
+  let templocalFileList = [];
   const DOAMIN = "https://insight-reader.vercel.app";
+  // const DOAMIN = "http://localhost:5001";
 
   function splitLongMessage(text, chunkSize = 2500) {
     const chunks = [];
@@ -41,93 +43,110 @@ function App() {
     return chunks;
   }
 
-  function DisplayFiles({ fileList }) {
-    if (fileList.length > 0 && fileList.length <= 3) {
-      return (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "start",
-            margin: "0 10vw",
-          }}
-        >
-          {Array.from(fileList).map((file, index) => (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-                paddingLeft: "5px",
-                border: "2px solid #D6D6D6 ",
-                color: "#858FCD",
-                margin: 2,
-                borderRadius: 10,
-                maxWidth: "30vw",
-                maxHeight: "5vh",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: "0.85em",
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                  whiteSpace: "nowrap",
-                }}
-                title={file}
-              >
-                {file}
-              </div>
-              <IconButton
-                onClick={() => {
-                  removeFile(index);
-                }}
-              >
-                <ClearIcon style={{ color: "#D6D6D6", fontSize: "0.8em" }} />
-              </IconButton>
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return <div>you can upload up to 3 pdf files</div>;
-  }
-
-  function removeFile(fileIndex) {
-    const updatedFileNames = fileNames.filter(
-      (_, index) => fileIndex !== index
-    );
-    setFileNames(updatedFileNames);
-
-    const updatedFiles = files.filter((_, index) => fileIndex !== index);
-    setFiles(updatedFiles);
-  }
-
-  function handleChange(e) {
-    const value = e.target.value;
-    setInputValue(value);
-  }
-
   async function handleUpload(event) {
     setLoading(true);
-    try {
-      const formData = new FormData();
-      for (let i = 0; i < event.target.files.length; i++) {
-        fileList.push(event.target.files[i].name);
+    const formData = new FormData();
+    for (let i = 0; i < event.target.files.length; i++) {
+      templocalFileList.push(event.target.files[i]);
+      setlocalFileList(templocalFileList);
+      if (event.target.files[i].type === "application/pdf") {
         formData.append("files", event.target.files[i]);
       }
-      setFileNames(fileList);
+    }
+    try {
       const response = await axios.post(`${DOAMIN}/upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "application/pdf" },
       });
-      const filePaths = response.data.filePaths;
-      setFiles(filePaths);
+      setFilesPath(response.data.filePaths);
     } catch (error) {
       console.error("file upload error: ", error);
     } finally {
       setLoading(false);
     }
+  }
+
+  function DisplayFiles({ localFileList }) {
+    if (
+      localFileList &&
+      localFileList.length > 0 &&
+      localFileList.length <= 3
+    ) {
+      if (isPDF(localFileList)) {
+        return (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "start",
+              margin: "0 10vw",
+            }}
+          >
+            {localFileList.map((file, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-around",
+                  paddingLeft: "5px",
+                  border: "2px solid #D6D6D6 ",
+                  color: "#858FCD",
+                  margin: 2,
+                  borderRadius: 10,
+                  maxWidth: "30vw",
+                  maxHeight: "5vh",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.85em",
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={file.name}
+                >
+                  {file.name}
+                </div>
+                <IconButton
+                  onClick={() => {
+                    removeFile(index);
+                  }}
+                >
+                  <ClearIcon style={{ color: "#D6D6D6", fontSize: "0.8em" }} />
+                </IconButton>
+              </div>
+            ))}
+          </div>
+        );
+      } else {
+        return <div>please upload pdf files only</div>;
+      }
+    } else if (localFileList.length === 0) {
+      return <div>you can upload up to 3 files</div>;
+    }
+  }
+
+  function isPDF(localFileList) {
+    return localFileList.every((file) => {
+      return file.type === "application/pdf";
+    });
+  }
+
+  function removeFile(fileIndex) {
+    const updatedLocalFileList = localFileList.filter(
+      (_, index) => fileIndex !== index
+    );
+    setlocalFileList(updatedLocalFileList);
+    const updatedFilesPath = localFileList.filter(
+      (_, index) => fileIndex !== index
+    );
+    setFilesPath(updatedFilesPath);
+  }
+
+  function handleChange(e) {
+    const value = e.target.value;
+    setInputValue(value);
   }
 
   async function handleSend() {
@@ -143,7 +162,7 @@ function App() {
         setMessages((prevMessage) => [...prevMessage, newMessage]);
         setInputValue("");
         const response = await axios.get(`${DOAMIN}/chat`, {
-          params: { question, filePaths: files.join(",") },
+          params: { question, filePaths: filesPath.join(",") },
         });
         const botMessageChunks = splitLongMessage(response.data);
 
@@ -200,7 +219,7 @@ function App() {
           alignItems: "center",
         }}
       >
-        <DisplayFiles fileList={fileNames} />
+        <DisplayFiles localFileList={localFileList} />
         <InputBox
           handleChange={handleChange}
           handleSend={handleSend}

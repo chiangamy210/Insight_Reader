@@ -26,25 +26,6 @@ function runMiddleware(req, res, fn) {
     });
   });
 }
-// export default async function handler(req, res) {
-//   await runMiddleware(req, res, uploadMiddleware);
-//   console.log(req.file.buffer);
-//   const stream = await cloudinary.uploader.upload_stream(
-//     {
-//       folder: "demo",
-//     },
-//     (error, result) => {
-//       if (error) return send.error(error);
-//       res.status(200).json(result);
-//       if (!req.files) {
-//         return res.status(400).send("No files uploaded.");
-//       }
-//       filePaths = req.files.map((file) => file.path);
-//       res.send(filePaths);
-//     }
-//   );
-//   streamifier.createReadStream(req.file.buffer).pipe(stream);
-// }
 
 export default async function handler(req, res) {
   try {

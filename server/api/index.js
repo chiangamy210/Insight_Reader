@@ -1,11 +1,11 @@
 import express from "express";
-// import multer from "multer";
 import cors from "cors";
 import dotenv from "dotenv";
 import chat from "../chat.js";
 import handler from "./upload.js";
 
 const app = express();
+// app.use(cors());
 
 app.use(
   cors({
@@ -39,33 +39,3 @@ app.get("/", (req, res) => res.send("Express on Vercel"));
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-// for local
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads");
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname);
-//   },
-// });
-
-// const upload = multer({ storage: storage });
-// post up to 3 files
-// let filePaths;
-// app.post("/upload", upload.array("files", 3), (req, res) => {
-//   try {
-//     if (!req.files) {
-//       return res.status(400).send("No files uploaded.");
-//     }
-
-//     filePaths = req.files.map((file) => file.path);
-//     res.send(filePaths);
-//   } catch (e) {
-//     res.send(`uppload error ${e}`);
-//   }
-// });
-
-//add delete file API
-// check if chat.js handling remote path? or local only?
