@@ -5,15 +5,15 @@ import chat from "../chat.js";
 import handler from "./upload.js";
 
 const app = express();
-// app.use(cors());
+app.use(cors());
 
-app.use(
-  cors({
-    origin: "https://insight-reader-client.vercel.app",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://insight-reader-client.vercel.app",
+//     methods: ["GET", "POST"],
+//     allowedHeaders: ["Content-Type"],
+//   })
+// );
 
 dotenv.config();
 

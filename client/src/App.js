@@ -120,7 +120,7 @@ function App() {
           </div>
         );
       } else {
-        return <div>please upload pdf files only</div>;
+        return <div style={{ color: "red" }}>please upload pdf files only</div>;
       }
     } else if (localFileList.length === 0) {
       return <div>you can upload up to 3 files</div>;
@@ -232,3 +232,4 @@ function App() {
   );
 }
 export default App;
+//change font
